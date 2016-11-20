@@ -16,6 +16,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ESP8266Server.ino" />
+    <None Include="packages.config" />
   </ItemGroup>
- 
+  <ItemGroup>
+    <ClInclude Include="__vm\.ESP8266Server.vsarduino.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="configuration.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
 </Project>
