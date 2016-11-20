@@ -89,9 +89,6 @@
   <ItemGroup>
     <ClInclude Include="__vm\.ESP8266Server.vsarduino.h" />
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="configuration.c" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\Microsoft.Azure.C.SharedUtility.1.0.20\build\native\Microsoft.Azure.C.SharedUtility.targets" Condition="Exists('..\packages\Microsoft.Azure.C.SharedUtility.1.0.20\build\native\Microsoft.Azure.C.SharedUtility.targets')" />
