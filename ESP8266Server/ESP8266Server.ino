@@ -1,3 +1,4 @@
+#include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecure.h>
 #include <DHT.h>
@@ -5,6 +6,7 @@
 
 #define DHTTYPE DHT22
 #define DHTPIN  2
+#define SENSORDATA_JSON_SIZE (JSON_OBJECT_SIZE(2))
 
 const char* ssid = "";
 const char* password = "";
@@ -123,6 +125,18 @@ float gethumidity() {
 	return humidity;
 }
 
+char* serialize(float temp, float humidity)
+{
+	char buffer[256];
+	Serial.println("Starting serialization");
+	StaticJsonBuffer<SENSORDATA_JSON_SIZE> jsonBuffer;
+	JsonObject& root = jsonBuffer.createObject();
+	root["temp"] = temp;
+	root["humidity"] = humidity;
+	root.prettyPrintTo(Serial);
+	root.printTo(buffer, sizeof(buffer));
+	return buffer;
+}
 float gettemperature() {
 	// Reading temperature for humidity takes about 250 milliseconds!
 	// Sensor readings may also be up to 2 seconds 'old' (it's a very slow sensor)
@@ -145,10 +159,11 @@ void loop(void) {
 	long now = millis();
 	if (now - lastMsg > interval) {
 		lastMsg = now;
+		
 		char tempStr[100];
-		dtostrf(gettemperature(), 6, 2, tempStr);
+		char* json = serialize(gettemperature(), gethumidity());
 		Serial.print("Publish message: ");
-		Serial.println(tempStr);
-		client.publish(publishPath, tempStr);
+		Serial.println(json);
+		client.publish(publishPath, json);
 	}
 }
