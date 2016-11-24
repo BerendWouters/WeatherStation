@@ -1,0 +1,6 @@
+﻿{
+    "STORAGE_NAME": "storeparkings",
+    "STORAGE_KEY": "VyaRIOnR+7l69DbFWWeSFneN3I4OBO80a5cQTEioe7RDTY3J2IRGQKuhhYcsd0pco9LzSu+QGtUzwbZd045JoA==",
+    "PARTITION_KEY": "device",
+    "TABLE_NAME": "tempandhumid"
+}

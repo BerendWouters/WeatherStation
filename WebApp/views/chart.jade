@@ -1,0 +1,29 @@
+﻿extends  layout
+
+block content
+    h2 #{title}
+    table.table.table-striped.table-bordered
+        tr
+            td Device
+            td Timestamp
+            td Temperature (in Celsius)
+            td Humidity (in %)
+        if (typeof measurements == "undefined")
+            tr
+                td
+        else
+            each measurement in measurements
+                tr
+                    td #{measurement.deviceid._}
+                    - var datetime = new Date(measurement.time._ * 1000);
+                    - var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                    - var year = datetime.getFullYear();
+                    - var month = months[datetime.getMonth()];
+                    - var date = datetime.getDate();
+                    - var hour = datetime.getHours();
+                    - var min = datetime.getMinutes() < 10 ? '0' + datetime.getMinutes() : datetime.getMinutes(); 
+                    - var sec = datetime.getSeconds() < 10 ? '0' + datetime.getSeconds() : datetime.getSeconds();
+                    - var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+                    td #{time}
+                    td #{measurement.temp._}
+                    td #{measurement.humidity._}
