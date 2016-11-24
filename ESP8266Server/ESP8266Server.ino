@@ -1,27 +1,32 @@
+#include <NTPClient.h>
+#include <TimeLib.h>
+#include <Time.h>
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecure.h>
 #include <DHT.h>
 #include <PubSubClient.h>
+#include <WiFiUdp.h>
 
 #define DHTTYPE DHT22
 #define DHTPIN  2
-#define SENSORDATA_JSON_SIZE (JSON_OBJECT_SIZE(2))
+#define SENSORDATA_JSON_SIZE (JSON_OBJECT_SIZE(4))
 
-const char* ssid = "";
-const char* password = "";
-const char* mqtt_server = "";
-const char* deviceId = "";
-const char* devicePath = "";
-const char* deviceSAS = "";
-const char* publishPath = "";
-const char* subscriptionPath = "";
+const char* ssid = "Graaf_en_Gravin";
+const char* password = "Noorwegen2015";
+const char* mqtt_server = "BrixelIoT.azure-devices.net";
+const char* deviceId = "device";
+const char* devicePath = "brixeliot.azure-devices.net/device";
+const char* deviceSAS = "SharedAccessSignature sr=BrixelIoT.azure-devices.net%2Fdevices%2Fdevice&sig=PJig7zogX4sc9NquTAB87zcM2A4gi%2F%2B8V4kcEd5i74I%3D&se=1511107123";
+const char* publishPath = "devices/device/messages/events/";
+const char* subscriptionPath = "devices/device/messages/devicebound/#";
 
 
 DHT dht(DHTPIN, DHTTYPE);
 WiFiClientSecure espClient;
 PubSubClient client(espClient);
-
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP);
 
 float humidity, temp_f;  // Values read from sensor
 String webString = "";     // String to display
@@ -125,7 +130,7 @@ float gethumidity() {
 	return humidity;
 }
 
-char* serialize(float temp, float humidity)
+char* serialize(float temp, float humidity, unsigned long unixTime)
 {
 	char buffer[256];
 	Serial.println("Starting serialization");
@@ -133,6 +138,8 @@ char* serialize(float temp, float humidity)
 	JsonObject& root = jsonBuffer.createObject();
 	root["temp"] = temp;
 	root["humidity"] = humidity;
+	root["deviceId"] = deviceId;
+	root["time"] = unixTime;
 	root.prettyPrintTo(Serial);
 	root.printTo(buffer, sizeof(buffer));
 	return buffer;
@@ -155,13 +162,13 @@ void loop(void) {
 		reconnect();
 	}
 	client.loop();
-
+	timeClient.update();
 	long now = millis();
 	if (now - lastMsg > interval) {
 		lastMsg = now;
 		
 		char tempStr[100];
-		char* json = serialize(gettemperature(), gethumidity());
+		char* json = serialize(gettemperature(), gethumidity(), timeClient.getEpochTime());
 		Serial.print("Publish message: ");
 		Serial.println(json);
 		client.publish(publishPath, json);
