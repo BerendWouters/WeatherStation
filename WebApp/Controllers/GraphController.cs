@@ -41,7 +41,7 @@ namespace WebApp.Controllers
             // Construct the query operation for all customer entities where PartitionKey="Smith".
             TableQuery<TempAndHumid> query = new TableQuery<TempAndHumid>().Where(TableQuery.GenerateFilterConditionForDate("Timestamp", QueryComparisons.GreaterThanOrEqual, DateTimeOffset.Now.AddDays(timeSpan).Date));
             var entities = table.ExecuteQuery(query);
-            var jsonData = entities.Select(e => new DataDTO()
+            var jsonData = entities.OrderBy(x => x.Timestamp).Select(e => new DataDTO()
             {
                 Temp = e.temp,
                 Timestamp = e.Timestamp.ToLocalTime().ToString("O"),
