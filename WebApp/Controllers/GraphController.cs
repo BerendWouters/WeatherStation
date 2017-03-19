@@ -8,6 +8,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
 using WebApp.Models;
+using WebApp.DTOs;
 
 namespace WebApp.Controllers
 {
@@ -47,7 +48,7 @@ namespace WebApp.Controllers
                     TableOperators.And,
                     TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.GreaterThanOrEqual, previousTime)));
             var entities = table.ExecuteQuery(query);
-            var jsonData = entities.OrderBy(x => x.Timestamp).Select(e => new DataDTO()
+            var jsonData = entities.OrderBy(x => x.Timestamp).Select(e => new TempAndHumidDTO()
             {
                 Temp = e.temp,
                 Timestamp = e.Timestamp.ToLocalTime().ToString("O"),
@@ -56,16 +57,6 @@ namespace WebApp.Controllers
             var json = JsonConvert.SerializeObject(jsonData);
             ViewBag.Data = json;
             return View();
-        }
-         
-    }
-    
-    
-
-    public class DataDTO
-    {
-        public double Humidity { get; set; }
-        public string Timestamp { get; set; }
-        public double Temp { get; set; }
+        }         
     }
 }
