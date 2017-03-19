@@ -12,14 +12,14 @@
 #define DHTPIN  2
 #define SENSORDATA_JSON_SIZE (JSON_OBJECT_SIZE(4))
 
-const char* ssid = "Graaf_en_Gravin";
-const char* password = "Noorwegen2015";
-const char* mqtt_server = "BrixelIoT.azure-devices.net";
-const char* deviceId = "device";
-const char* devicePath = "brixeliot.azure-devices.net/device";
-const char* deviceSAS = "SharedAccessSignature sr=BrixelIoT.azure-devices.net%2Fdevices%2Fdevice&sig=PJig7zogX4sc9NquTAB87zcM2A4gi%2F%2B8V4kcEd5i74I%3D&se=1511107123";
-const char* publishPath = "devices/device/messages/events/";
-const char* subscriptionPath = "devices/device/messages/devicebound/#";
+const char* ssid = "";
+const char* password = "";
+const char* mqtt_server = "";
+const char* deviceId = "";
+const char* devicePath = "";
+const char* deviceSAS = "";
+const char* publishPath = "";
+const char* subscriptionPath = "";
 
 
 DHT dht(DHTPIN, DHTTYPE);
