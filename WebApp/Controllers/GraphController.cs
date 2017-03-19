@@ -37,13 +37,15 @@ namespace WebApp.Controllers
 
             // Create the CloudTable object that represents the "people" table.
             CloudTable table = tableClient.GetTableReference("tempandhumid");
+            var previousTime = Helpers.DateTimeHelpers.GetUnixTimeStamp(DateTimeOffset.Now.AddDays(timeSpan).Date).ToString();
+
 
             // Construct the query operation for all customer entities where PartitionKey="Smith".
             TableQuery<TempAndHumid> query = new TableQuery<TempAndHumid>().Where(
                 TableQuery.CombineFilters(
                     TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, "device"),
                     TableOperators.And,
-                    TableQuery.GenerateFilterConditionForDate("RowKey", QueryComparisons.GreaterThanOrEqual, DateTimeOffset.Now.AddDays(timeSpan).Date)));
+                    TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.GreaterThanOrEqual, previousTime)));
             var entities = table.ExecuteQuery(query);
             var jsonData = entities.OrderBy(x => x.Timestamp).Select(e => new DataDTO()
             {
@@ -57,6 +59,8 @@ namespace WebApp.Controllers
         }
          
     }
+    
+    
 
     public class DataDTO
     {
