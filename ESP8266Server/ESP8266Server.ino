@@ -1,10 +1,16 @@
+#include <NTPClient.h>
+#include <TimeLib.h>
+#include <Time.h>
+#include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecure.h>
 #include <DHT.h>
 #include <PubSubClient.h>
+#include <WiFiUdp.h>
 
 #define DHTTYPE DHT22
 #define DHTPIN  2
+#define SENSORDATA_JSON_SIZE (JSON_OBJECT_SIZE(4))
 
 const char* ssid = "";
 const char* password = "";
@@ -19,7 +25,8 @@ const char* subscriptionPath = "";
 DHT dht(DHTPIN, DHTTYPE);
 WiFiClientSecure espClient;
 PubSubClient client(espClient);
-
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP);
 
 float humidity, temp_f;  // Values read from sensor
 String webString = "";     // String to display
@@ -123,6 +130,20 @@ float gethumidity() {
 	return humidity;
 }
 
+char* serialize(float temp, float humidity, unsigned long unixTime)
+{
+	char buffer[256];
+	Serial.println("Starting serialization");
+	StaticJsonBuffer<SENSORDATA_JSON_SIZE> jsonBuffer;
+	JsonObject& root = jsonBuffer.createObject();
+	root["temp"] = temp;
+	root["humidity"] = humidity;
+	root["deviceId"] = deviceId;
+	root["time"] = unixTime;
+	root.prettyPrintTo(Serial);
+	root.printTo(buffer, sizeof(buffer));
+	return buffer;
+}
 float gettemperature() {
 	// Reading temperature for humidity takes about 250 milliseconds!
 	// Sensor readings may also be up to 2 seconds 'old' (it's a very slow sensor)
@@ -141,14 +162,15 @@ void loop(void) {
 		reconnect();
 	}
 	client.loop();
-
+	timeClient.update();
 	long now = millis();
 	if (now - lastMsg > interval) {
 		lastMsg = now;
+		
 		char tempStr[100];
-		dtostrf(gettemperature(), 6, 2, tempStr);
+		char* json = serialize(gettemperature(), gethumidity(), timeClient.getEpochTime());
 		Serial.print("Publish message: ");
-		Serial.println(tempStr);
-		client.publish(publishPath, tempStr);
+		Serial.println(json);
+		client.publish(publishPath, json);
 	}
 }
