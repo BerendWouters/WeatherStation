@@ -1,7 +1,7 @@
 # Arduino Weather Station with Azure IoT Hub
 
-Build status
-* WebApp: 
+WebApp
+
 [![Build status](https://ci.appveyor.com/api/projects/status/4kmox89hrm36pheu/branch/master?svg=true)](https://ci.appveyor.com/project/BerendWouters/weatherstation-gxxdh/branch/master)
 
 
